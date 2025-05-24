@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
 
 
-const Register = () => {
+const SignUp = () => {
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -124,4 +124,4 @@ const Register = () => {
     );
 };
 
-export default Register;
+export default SignUp;

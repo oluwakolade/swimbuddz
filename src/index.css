@@ -23,4 +23,7 @@
   .screen{
     @apply w-screen h-dvh max-w-lg mx-auto px-8
   }
+  .header{
+    @apply text-xl font-bold text-blue-dark self-start
+  }
 }

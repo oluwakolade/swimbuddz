@@ -51,7 +51,7 @@ const Login = () => {
         <section className='screen flex flex-col gap-6 '>
         <Logo/>
 
-            <p className='text-xl font-bold text-blue-dark self-start'>Login to your Account</p>
+            <p className='header'>Login to your Account</p>
 
             <form onSubmit={handleLogin} className='flex flex-col gap-6'>
                 <div className='flex flex-col gap-4'>

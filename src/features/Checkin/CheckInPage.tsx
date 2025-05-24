@@ -3,6 +3,10 @@ import { supabase } from '../../services/supabaseClient';
 import Logo from '../../components/Logo';
 import InputField from '../../components/InputField';
 import ParticipantCard from '../../components/ParticipantCard';
+import AppToast from '../../components/AppToast';
+import { HiArrowLeft, HiCheckCircle } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
+
 
 type Participant = {
     id: string;
@@ -16,25 +20,38 @@ const isSaturday = new Date().getDay() === 6;
 const CheckInPage = () => {
     const [participants, setParticipants] = useState<Participant[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
+    const [checkInLoading, setCheckInLoading] = useState(false);
+    const [checkOutLoading, setCheckOutLoading] = useState(false);
+
     const [searchTerm, setSearchTerm] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const navigate = useNavigate();
+
+
 
 
     const fetchParticipants = async () => {
-        const { data, error } = await supabase.from('participants').select('*');
+        const { data, error } = await supabase
+            .from('participants')
+            .select('*')
+            .eq('has_registered', true);
+
         if (error) {
             console.error('Error fetching participants:', error.message);
             return;
         }
         setParticipants(data);
+        console.log('Registered participants fetched:', data);
     };
 
-const filteredParticipants = participants.filter((p) =>
-  p.full_name.toLowerCase().includes(searchTerm.toLowerCase())
-);
+
+    const filteredParticipants = participants.filter((p) =>
+        p.full_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const handleCheckIn = async () => {
         if (!selectedId) return alert('Please select a name');
-        setLoading(true);
+        setCheckInLoading(true);
         const { error } = await supabase
             .from('participants')
             .update({ has_checked_in: true, check_in_time: new Date() })
@@ -44,13 +61,15 @@ const filteredParticipants = participants.filter((p) =>
         } else {
             alert('Checked in successfully!');
             fetchParticipants();
+            setShowToast(true);
+
         }
-        setLoading(false);
+        setCheckInLoading(false);
     };
 
     const handleCheckOut = async () => {
         if (!selectedId) return alert('Please select a name');
-        setLoading(true);
+        setCheckOutLoading(true);
         const { error } = await supabase
             .from('participants')
             .update({ has_checked_out: true, check_out_time: new Date() })
@@ -61,85 +80,88 @@ const filteredParticipants = participants.filter((p) =>
             alert('Checked out successfully!');
             fetchParticipants();
         }
-        setLoading(false);
+        setCheckOutLoading(false);
     };
 
     useEffect(() => {
         fetchParticipants();
     }, []);
-const selected = participants.find(p => p.id === selectedId);
+
+    const selected = participants.find(p => p.id === selectedId);
 
     return (
         <div className="screen  bg-white text-blue-dark">
-            <Logo />
-            <h1 className="text-2xl font-bold mb-4">Saturday Check In</h1>
+            <div className='flex flex-row justify-between items-center'>
+                <Logo />
+                <button
+                    type='submit'
+                    onClick={() => navigate('/register')
+                    }
+                    className=' flex flex-row  gap-2 cursor-pointer p-2 rounded-md border border-surface text-surface font-playfair text-sm font-medium'
+                >
+                    <HiArrowLeft className='h-5 w-5' />
+
+                    Back
+                </button>
+            </div>
+            <h1 className="header">Saturday Check In</h1>
             <InputField
                 type='text'
                 placeholder='Search Name'
-  value={searchTerm}
+                value={searchTerm}
                 label=''
-  onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
             />
             <p className="my-2">Select your name:</p>
+            <p className="text-xs text-gray-500 italic pb-4">
+                Only registered participants are allowed to check in.
+            </p>
 
-
-
-            {/* <select
-        className="w-full p-2 mb-4 text-black"
-        onChange={(e) => setSelectedId(e.target.value)}
-        defaultValue=""
-      >
-        <option value="" disabled>Select your name</option>
-
-        {participants.map((p) => (
-          <option key={p.id} value={p.id}>
-            {p.full_name}
-          </option>
-        ))}
-      </select> */}
-
-            <div className='flex flex-col gap-2'>
-                {/* {participants.map((p) => (
+            <div className="flex flex-col gap-2 mb-4 max-h-96 overflow-y-auto">
+                {filteredParticipants.map((p) => (
                     <ParticipantCard
                         key={p.id}
                         id={p.id}
                         name={p.full_name}
                         isSelected={selectedId === p.id}
+                        hasCheckedIn={p.has_checked_in}
+                        hasCheckedOut={p.has_checked_out}
                         onClick={(id) => setSelectedId(id)}
                     />
-
-                ))} */}
-                {filteredParticipants.map((p) => (
-  <ParticipantCard
-    key={p.id}
-    id={p.id}
-    name={p.full_name}
-    isSelected={selectedId === p.id}
-    onClick={(id) => setSelectedId(id)}
-  />
-))}
+                ))}
 
             </div>
 
             {isSaturday ? (
-                <>
+                <div className='flex flex-row gap-4 mt-6'>
                     <button
-                        className="w-full bg-green-600 py-2 rounded mb-2"
+                        className="cursor-pointer w-full border border-green-600 text-green-600 py-2 rounded-md font-playfair font-medium "
                         onClick={handleCheckIn}
-  disabled={loading || selected?.has_checked_in}
+                        disabled={checkInLoading || selected?.has_checked_in}
                     >
-                        {loading ? 'Checking in...' : 'Check In'}
+                        {checkInLoading ? 'Checking in...' : 'Check In'}
                     </button>
                     <button
-                        className="w-full bg-red-600 py-2 rounded"
+                        className="cursor-pointer w-full border border-red-600 text-red-600 py-2 rounded-md font-playfair font-medium"
                         onClick={handleCheckOut}
-  disabled={loading || selected?.has_checked_in}
+                        disabled={checkOutLoading || !selected?.has_checked_in || selected?.has_checked_out}
                     >
-                        {loading ? 'Checking out...' : 'Check Out'}
+                        {checkOutLoading ? 'Checking out...' : 'Check Out'}
                     </button>
-                </>
+                </div>
             ) : (
                 <p className="text-yellow-400 text-sm">Check-in is only available on Saturdays.</p>
+            )}
+
+            {showToast && (
+                <div className='fixed top-4 right-4 cursor-pointer p-4'>
+
+                    <AppToast
+                        icon={<HiCheckCircle className='h-5 w-5' />}
+                        message="Check in successful!"
+                    />
+                </div>
+
             )}
         </div>
     );
