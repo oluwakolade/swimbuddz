@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
-import Login from '../features/Auth/Login';
+// import Login from '../features/Auth/Login';
 // import RequireAuth from './RequireAuth';
 // import DashboardHome from '../features/Dashboard/DashboardHome';
 import CheckInPage from '../features/Checkin/CheckInPage';
 import AuthPage from '../features/Auth/AuthPage';
-import SignUp from '../features/Auth/SignUp';
+// import SignUp from '../features/Auth/SignUp';
 import RegisterPage from '../features/Checkin/RegisterPage';
 
 
@@ -14,8 +14,8 @@ const AppRoutes = () => {
             <Route path='/' element={<AuthPage />} />
             <Route path='register' element={<RegisterPage />} />
             <Route path='checkin' element={<CheckInPage />} />
-            <Route path='login' element={<Login />} />
-            <Route path='signup' element={<SignUp />} />
+            {/* <Route path='login' element={<Login />} />
+            <Route path='signup' element={<SignUp />} /> */}
 
             {/* Authenticated user routes */}
             {/* <Route element={<RequireAuth />}> */}

@@ -4,8 +4,10 @@ import Logo from '../../components/Logo';
 import InputField from '../../components/InputField';
 import ParticipantCard from '../../components/ParticipantCard';
 import AppToast from '../../components/AppToast';
-import { HiCheckCircle, HiLogin } from 'react-icons/hi';
+import { HiCheckCircle, HiArrowLeft } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
+import ReasonModal from '../../components/Modal';
+
 
 
 type Participant = {
@@ -21,6 +23,9 @@ const RegisterPage = () => {
     const [loading, setLoading] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [manualName, setManualName] = useState('');
+    const [showReasonModal, setShowReasonModal] = useState(false);
+    const [tempSelectedId, setTempSelectedId] = useState<string | null>(null);
+
     const navigate = useNavigate();
 
 
@@ -92,19 +97,44 @@ const RegisterPage = () => {
         return nextSaturday.toLocaleDateString();
     };
 
+    const handleSelectReason = async (reason: string) => {
+        if (!tempSelectedId) return;
+
+        setLoading(true);
+        const { error } = await supabase
+            .from('participants')
+            .update({
+                has_registered: true,
+                reason_for_attending: reason
+            })
+            .eq('id', tempSelectedId);
+
+        setLoading(false);
+        setShowReasonModal(false);
+        setTempSelectedId(null);
+
+        if (error) {
+            alert('Error updating reason!');
+        } else {
+            setShowToast(true);
+            fetchParticipants();
+        }
+    };
+
+
     return (
         <div className="screen bg-white text-blue-dark">
             <div className='flex flex-row justify-between items-center'>
                 <Logo />
                 <button
                     type='submit'
-                    onClick={() => navigate('/checkin')
+                    onClick={() => navigate('/')
                     }
-                    className='flex flex-row  gap-2 cursor-pointer p-2 rounded-md border border-surface text-surface font-playfair text-sm font-medium'
-                >                                        <HiLogin className='h-5 w-5' />
+                    className=' flex flex-row  gap-2 cursor-pointer p-2 rounded-md border border-surface text-surface font-playfair text-sm font-medium'
+                >
+                    <HiArrowLeft className='h-5 w-5' />
 
-                    Check In
-
+                    Back
                 </button>
             </div>
             <h1 className="header pb-2">Register for Saturday Check-in</h1>
@@ -141,7 +171,10 @@ const RegisterPage = () => {
                                 id={p.id}
                                 name={p.full_name}
                                 isSelected={selectedId === p.id}
-                                onClick={(id) => setSelectedId(id)}
+                                onClick={(id) => {
+                                    setTempSelectedId(id)
+                                    setShowReasonModal(true)
+                                }}
                                 isRegistered={false}
                             />
                         ))}
@@ -197,6 +230,18 @@ const RegisterPage = () => {
                 </div>
 
             )}
+
+            {showReasonModal && (
+                <ReasonModal
+                    show={showReasonModal}
+                    onClose={() => {
+                        setShowReasonModal(false);
+                        setTempSelectedId(null);
+                    }}
+                    onSelect={handleSelectReason}
+                />
+            )}
+
         </div>
     );
 };

@@ -95,7 +95,7 @@ const CheckInPage = () => {
                 <Logo />
                 <button
                     type='submit'
-                    onClick={() => navigate('/register')
+                    onClick={() => navigate('/')
                     }
                     className=' flex flex-row  gap-2 cursor-pointer p-2 rounded-md border border-surface text-surface font-playfair text-sm font-medium'
                 >
