@@ -18,33 +18,33 @@ const AuthPage = () => {
 
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setLoading(true);
+        e.preventDefault();
+        setLoading(true);
 
-  // Get which button was clicked
-  const target = e.nativeEvent as SubmitEvent;
-  const buttonClicked = (target.submitter as HTMLButtonElement).value;
+        // Get which button was clicked
+        const target = e.nativeEvent as SubmitEvent;
+        const buttonClicked = (target.submitter as HTMLButtonElement).value;
 
-  try {
-    if (parseInt(code) === swimbuddzCode) {
-      setShowToast(true);
+        try {
+            if (parseInt(code) === swimbuddzCode) {
+                setShowToast(true);
 
-      setTimeout(() => {
-        if (buttonClicked === 'rsvp') {
-          navigate('/register');
-        } else if (buttonClicked === 'checkin') {
-          navigate('/checkin');
+                setTimeout(() => {
+                    if (buttonClicked === 'rsvp') {
+                        navigate('/register');
+                    } else if (buttonClicked === 'checkin') {
+                        navigate('/checkin');
+                    }
+                }, 1000);
+            } else {
+                alert('Incorrect code. Try again.');
+            }
+        } catch (error) {
+            console.error('Unexpected error:', error);
+        } finally {
+            setLoading(false);
         }
-      }, 1000);
-    } else {
-      alert('Incorrect code. Try again.');
-    }
-  } catch (error) {
-    console.error('Unexpected error:', error);
-  } finally {
-    setLoading(false);
-  }
-};
+    };
 
 
     // const handleLogin = async (e: React.FormEvent) => {
@@ -86,21 +86,21 @@ const AuthPage = () => {
                 </div>
 
                 <div className='flex flex-row gap-2 items-center'>
-              <button
-  type='submit'
-  value='rsvp'
-  className='cursor-pointer bg-blue-dark font-bold text-white px-4 py-2 rounded'
->
-  RSVP
-</button>
+                    <button
+                        type='submit'
+                        value='rsvp'
+                        className='cursor-pointer bg-blue-dark font-bold text-white px-4 py-2 rounded'
+                    >
+                        RSVP
+                    </button>
 
-<button
-  type='submit'
-  value='checkin'
-  className=' cursor-pointer bg-green-500 font-bold text-white px-4 py-2 rounded'
->
-  Check In
-</button>
+                    <button
+                        type='submit'
+                        value='checkin'
+                        className=' cursor-pointer bg-green-500 font-bold text-white px-4 py-2 rounded'
+                    >
+                        Check In
+                    </button>
 
                 </div>
                 {showToast && (

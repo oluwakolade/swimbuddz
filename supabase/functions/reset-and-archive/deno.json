@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.window"], 
+    "strict": true,
+    "jsx": "react-jsx", 
+    "noEmit": true, 
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "imports": {
+    "https://deno.land/std/": "https://deno.land/std@0.224.0/", 
+    "https://esm.sh/": "https://esm.sh/" 
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "options": {
+      "singleQuote": true,
+      "lineWidth": 100
+    }
+  },
+  "exclude": [
+    "../migrations/", 
+    "../test/"
+  ]
+}
